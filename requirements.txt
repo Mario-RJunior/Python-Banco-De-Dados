@@ -2,3 +2,4 @@ sqlite3
 sqlitedatabase
 MySQLdb
 psycopg2-binary
+openpyxl
