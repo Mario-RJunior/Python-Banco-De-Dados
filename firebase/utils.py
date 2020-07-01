@@ -1,13 +1,29 @@
+import pyrebase
+
+# Os campos de "config" devem ser preenchidos com os respectivos dados pessoais do usuário, não
+# sendo recomendavel deixar seu acesso público.
 
 
 def conectar():
     """
     Função para conectar ao servidor
     """
-    print('Conectando ao servidor...')
+    config = {
+        "apiKey": "",
+        "authDomain": "",
+        "databaseURL": "",
+        "storageBucket": ""
+    }
+
+    conn = pyrebase.initialize_app(config)
+
+    db = conn.database()
+
+    return db
+
 
 def desconectar():
-    """ 
+    """
     Função para desconectar do servidor.
     """
     print('Desconectando do servidor...')
@@ -17,25 +33,84 @@ def listar():
     """
     Função para listar os produtos
     """
-    print('Listando produtos...')
+    db = conectar()
+
+    produtos = db.child("produtos").get()
+
+    if produtos.val():
+        print('Listando produtos...')
+        print('--------------------')
+        for produto in produtos.each():
+            print(f'ID: {produto.key()}')
+            print(f"Produto: {produto.val()['nome']}")
+            print(f"Preço: {produto.val()['preco']}")
+            print(f"Estoque: {produto.val()['estoque']}")
+            print('-------------------')
+    else:
+        print('Não existem produtos cadastrados.')
+
 
 def inserir():
     """
     Função para inserir um produto
-    """  
-    print('Inserindo produto...')
+    """
+    db = conectar()
+
+    nome = input('Informe o nome do produto: ')
+    preco = float(input('Informe o preço: '))
+    estoque = int(input('informe o estoque: '))
+
+    produto = {"nome": nome, "preco": preco, "estoque": estoque}
+
+    res = db.child("produtos").push(produto)
+
+    if 'name' in res:
+        print(f'O produto {nome} foi cadastrado com sucesso.')
+    else:
+        print('Não foi possível cadastrar o produto.')
+
 
 def atualizar():
     """
     Função para atualizar um produto
     """
-    print('Atualizando produto...')
+    db = conectar()
+
+    _id = input('Informe o ID do produto: ')
+
+    produto = db.child('produtos').child(_id).get()
+
+    if produto.val():
+        nome = input('Informe o nome do produto: ')
+        preco = float(input('Informe o preço :'))
+        estoque = int(input('Informe o estoque: '))
+
+        novo_produto = {"nome": nome, "preco": preco, "estoque": estoque}
+
+        db.child('produtos').child(_id).update(novo_produto)
+
+        print(f'O produto {nome} foi atualizado com sucesso.')
+    else:
+        print('Não existe produto com o id informado')
+
 
 def deletar():
     """
     Função para deletar um produto
-    """  
-    print('Deletando produto...')
+    """
+    db = conectar()
+
+    _id = input('Informe o id do produto: ')
+
+    produto = db.child('produtos').child(_id).get()
+
+    if produto.val():
+        db.child('produtos').child(_id).remove()
+
+        print('O produto foi deletado com sucesso')
+    else:
+        print('Não existe produto com o id informado.')
+
 
 def menu():
     """
