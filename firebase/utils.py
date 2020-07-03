@@ -1,5 +1,6 @@
 import pyrebase
 
+
 # Os campos de "config" devem ser preenchidos com os respectivos dados pessoais do usuário, não
 # sendo recomendavel deixar seu acesso público.
 
@@ -20,13 +21,6 @@ def conectar():
     db = conn.database()
 
     return db
-
-
-def desconectar():
-    """
-    Função para desconectar do servidor.
-    """
-    print('Desconectando do servidor...')
 
 
 def listar():
